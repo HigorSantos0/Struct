@@ -31,7 +31,7 @@
 #include <string.h>
 
 //definição de constantes
-#define TAM 1
+#define TAM 5
 
 #define TRUE 1
 #define FALSE 0
@@ -54,11 +54,11 @@ typedef struct {		//representa um carro e todas as suas informações
 } TCarro;
 
 //protótipos das funções
-void buscarCarros (TCarro agencia[], int quant, char m[], int *a1, int *a2, float x);
+void buscarCarros (TCarro agencia[], int quant, char m[], int a1, int a2, float x);
 void reajustar0KM (TCarro agencia[], int quant, float taxa);
 int removerCarroEstoque (TCarro agencia[], int *quant, char placa[]);
 
-void preencherVetor (TCarro vetor[], int tamanho);
+void preencherVetor (TCarro agencia[]);
 void exibirDadosCarro (TCarro carro);
 void exibirTodosCarros (TCarro agencia[], int quant);
 
@@ -68,32 +68,19 @@ void main ()
 	//declaração de variáveis
 	TCarro agencia[TAM];	
 	int quantCarros = TAM;
-	char mod[quantCarros];
-	int ano1, ano2;
-	float val;
 	
 	//preenchendo o vetor para que as demais funções possam ser testadas
-	preencherVetor (agencia, quantCarros);
+	preencherVetor (agencia);
 		
 	//exibindo os carros que atenderem aos filtros definidos
 	
-	printf("Entre com o modelo: ");
-	fflush(stdin);
-	gets(agencia[quantCarros].modelo);
-	
-	printf("Entre com o ano: ");
-	scanf("%d", &ano1);
-	
-	printf("Entre com o segundo ano: ");
-	scanf("%d", &ano2);
-	
-	printf("Ate qual valor? ");
-	scanf("%f", &val);
-	
 	//Chamada 1
 	printf ("Chamada 1 (exibindo carros por filtro):\n");
-	buscarCarros (agencia, quantCarros, mod, &ano1, &ano2, val);
-
+	buscarCarros (agencia, quantCarros, "HB20", 2015, 2020, 38000);
+	
+	//Chamada 2
+	printf ("Chamada 2 (exibindo carros por filtro):\n");
+	buscarCarros (agencia, quantCarros, "CRETA", 2015, 2020, 38000);
 	
 	//chamando a função que reajustará os carros 0km
 	reajustar0KM (agencia, quantCarros, 2.5);
@@ -114,53 +101,23 @@ void main ()
 		printf ("\n\tPlaca não localizada!\n\n");
 	}
 	
+	//Chamada 2
+	printf ("Chamada 2 (remvendo carro do estoque):\n");
+	if (removerCarroEstoque (agencia, &quantCarros, "CDE 3456") == TRUE)
+	{
+		printf ("\n\tCarro removido com sucesso!\n");
+		exibirTodosCarros (agencia, quantCarros);
+	}
+	else
+	{
+		printf ("\n\tPlaca não localizada!\n\n");
+	}
 }
 
 //implementação das funções
 
-void preencherVetor (TCarro vetor[], int tamanho)
+void preencherVetor (TCarro agencia[])
 {
-	
-	int i;
-	
-	for(i = 0; i < tamanho; i++)
-	{
-		printf("PLACA: ");
-		fflush(stdin);
-		gets(vetor[i].placa);
-		
-		printf("MODELO: ");
-		fflush(stdin);
-		gets(vetor[i].modelo);
-		
-		printf("MARCA: ");
-		fflush(stdin);
-		gets(vetor[i].marca);
-		
-		printf("COR: ");
-		fflush(stdin);
-		gets(vetor[i].cor);
-		
-		printf("TIPO: ");
-		fflush(stdin);
-		gets(vetor[i].tipo);
-		
-		printf("KM: ");
-		scanf("%f",&vetor[i].km);
-		
-		printf("ANO DO CARRO: ");
-		scanf("%d", &vetor[i].ano.modelo);
-		
-		printf("FABRICADO: ");
-		scanf("%d", &vetor[i].ano.fabricacao);
-		
-		printf("VALOR: ");
-		scanf("%f", &vetor[i].valor);
-		
-		printf("\n");
-		
-	}
-	/*
 	//1º carro
 	strcpy (agencia[0].placa, "ABC 1234");
 	strcpy (agencia[0].modelo, "HB20");
@@ -215,10 +172,7 @@ void preencherVetor (TCarro vetor[], int tamanho)
 	agencia[4].ano.fabricacao = 2022;
 	agencia[4].valor = 85000;
 	strcpy (agencia[4].tipo, "0KM");	
-	*/
 }
-
-
 
 void exibirDadosCarro (TCarro carro)
 {
@@ -244,7 +198,7 @@ void exibirTodosCarros (TCarro agencia[], int quantidade)
 
 //Exibir todos os carros do modelo m, ano de fabricação entre a1 
 //e a2 (inclusive), com valor não superior a x reais.
-void buscarCarros (TCarro agencia[], int quant, char m[], int *a1, int *a2, float x)
+void buscarCarros (TCarro agencia[], int quant, char m[], int a1, int a2, float x)
 {
 	//declaração de variáveis
 	int i, cont = 0;
@@ -254,8 +208,8 @@ void buscarCarros (TCarro agencia[], int quant, char m[], int *a1, int *a2, floa
 	{
 		//verificando se o carro da posição 'i' atende aos filtros
 		if ((strcmp (m,agencia[i].modelo) == 0) && 
-		    (agencia[i].ano.fabricacao >= *a1) && 
-			(agencia[i].ano.fabricacao <= *a2) && 
+		    (agencia[i].ano.fabricacao >= a1) && 
+			(agencia[i].ano.fabricacao <= a2) && 
 			(agencia[i].valor <= x))
 		{
 			exibirDadosCarro (agencia[i]);
@@ -316,6 +270,5 @@ int removerCarroEstoque (TCarro ag[], int *quantidade, char placa[])
 	//fracasso na tentativa de remoção
 	return FALSE;
 }
-
 
 
